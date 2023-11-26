@@ -1,27 +1,23 @@
 #include "PID.h"
-
 using namespace std;
 
 PID::PID() {}
-
 PID::~PID() {}
 
 void PID::Init(double Kp, double Ki, double Kd) {
-  this->Kp = Kp;
-  this->Ki = Ki;
-  this->Kd = Kd;
-
-  p_error = 0;
-  i_error = 0;
-  d_error = 0;
+	Kp_ = Kp;
+	Ki_ = Ki;
+	Kd_ = Kd;
+	error_vector_.resize(3);
 }
 
-void PID::UpdateError(double cte) {
-  d_error = cte - p_error;
-  p_error = cte;
-  i_error += cte;
+vector<double> PID::UpdateError(double cte) {
+	error_vector_[2] = cte - error_vector_[0];
+	error_vector_[0] = cte;
+	error_vector_[1] += cte;
+	return error_vector_;
 }
 
 double PID::TotalError() {
-  return Kp*p_error + Ki*i_error + Kd*d_error;
+	return -(Kp_*error_vector_[0] + Ki_*error_vector_[1] + Kd_*error_vector_[2]);
 }
